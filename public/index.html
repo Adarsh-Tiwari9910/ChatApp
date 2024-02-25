@@ -4,38 +4,77 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Real Time Chat App</title>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <h1>Welcome to the Chat Room <span id="name"></span></h1>
-    <div id="login">
+    <h1 class="title">Welcome to the Chat Room <span id="name"></span></h1>
+    <div class="container">
+
+    <div id="login" class="section">
       <input
         type="text"
         id="usernameInput"
         autocomplete="off"
         placeholder="Enter your Username"
+        class="input"
       />
-      <button onclick="login()">Login</button>
+      <button onclick="login()" class="button">Login</button>
     </div>
-    <div id="chat" style="display:none;">
-      <div id="roomSelection" style="display:block;">
-        <input type="text" id="roomNameInput" autocomplete="off" placeholder="Enter Chat Room Name">
-        <button onclick="joinChatRoom()">Join Chat Room</button>
-        <button onclick="startPrivateChat()">Start Private Chat</button>
+    <div id="chat" class="section" style="display:none;">
+      <div id="roomSelection" class="room-selection" style="display:block;">
+        <input type="text" id="roomNameInput" class="input" autocomplete="off" placeholder="Enter Chat Room Name">
+        <button onclick="joinChatRoom()" class="button">Join Chat Room</button>
+        <button onclick="startPrivateChat()" class="button">Start Private Chat</button>
       </div>
       <div id="chatRoom" style="display:none;">
-        <h2>
+        <h2 class="room-header">
           Chat Room: <span id="currentRoom"></span>
         </h2>
-        <ul id="messages"></ul>
-        <input type="text" id="messageInput" autocomplete="off" />
-        <button onclick="sendMessage()" id="sendMessageBtn">Send</button>
+        <ul id="messages" class="messages"></ul>
+        <input type="text" id="messageInput" class="input" autocomplete="off" />
+        <button onclick="sendMessage()" id="sendMessageBtn" class="button">Send</button>
+        <p id="typingStatus" class="typing-status"></p>
       </div>
     </div>
+    
+  </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();
       let username = '';
       let currentRoom = '';
+
+      function displayMessage(message){
+        const messages = document.getElementById("messages");
+        const li = document.createElement("li");
+        li.textContent = message;
+        messages.appendChild(li);
+      }
+
+      function displayTyping(username,isTyping){
+        const typingStatus = document.getElementById('typingStatus');
+        if(isTyping){
+          typingStatus.textContent = `${username} is typing...`
+        }
+        else{
+          typingStatus.textContent = '';
+        }
+      }
+
+      let typingTimeout;
+      function handleTyping(){
+        if(currentRoom){
+          clearTimeout(typingTimeout);
+          socket.emit('typing', true); 
+          typingTimeout = setTimeout(() => {
+            socket.emit('typing', false); 
+          },1000);
+        }
+      }
+
+
+      const messagInput = document.getElementById('messageInput');
+      messagInput.addEventListener('input',handleTyping);
 
       function login(){
         const usernameInput = document.getElementById('usernameInput');
@@ -51,6 +90,8 @@
             socket.emit('login',username);
         }
       }
+
+
 
       function joinChatRoom(){
         const roomNameInput = document.getElementById("roomNameInput");
@@ -90,12 +131,22 @@
         }
       }
 
+      socket.on('messageHistory',(history) => {
+        const messages = document.getElementById('messages');
+        messages.innerHTML = '';
+
+        history.forEach(entry => {
+          const message = entry.user === username ? `You : ${entry.message}` : `${entry.user} : ${entry.message}`;
+          displayMessage(message);
+        });
+      })
+
+      socket.on('typing',(data) => {
+        displayTyping(data.username,data.isTyping);
+      })
+
       socket.on("chatMessage", (message) => {
-        console.log("from here message",message);
-        const messages = document.getElementById("messages");
-        const li = document.createElement("li");
-        li.textContent = message;
-        messages.appendChild(li);
+        displayMessage(message);
       });
 
 

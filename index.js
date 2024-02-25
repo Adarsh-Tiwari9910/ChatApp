@@ -30,6 +30,12 @@ io.on('connection',(socket) => {
             io.emit('userCount',users.size);
         }
     })
+
+    socket.on('typing',(isTyping) => {
+        if(currentRoom){
+            socket.to(currentRoom).emit('typing',{username,isTyping});
+        }
+    })
     
     socket.on('privateChat',(receipient) => {
         recipient = receipient.trim();
@@ -91,6 +97,10 @@ io.on('connection',(socket) => {
         users.delete(username);
         console.log(`${username} logged out`);
         io.emit('userCount',users.size);
+
+        if(currentRoom){
+            socket.to(currentRoom).emit('typing',{username,isTyping: false});
+        }
     })
 })
 
