@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real Time Chat App</title>
+  </head>
+  <body>
+    <h1>Welcome to the Chat Room <span id="name"></span></h1>
+    <div id="login">
+      <input
+        type="text"
+        id="usernameInput"
+        autocomplete="off"
+        placeholder="Enter your Username"
+      />
+      <button onclick="login()">Login</button>
+    </div>
+    <div id="chat" style="display:none;">
+      <div id="roomSelection" style="display:block;">
+        <input type="text" id="roomNameInput" autocomplete="off" placeholder="Enter Chat Room Name">
+        <button onclick="joinChatRoom()">Join Chat Room</button>
+        <button onclick="startPrivateChat()">Start Private Chat</button>
+      </div>
+      <div id="chatRoom" style="display:none;">
+        <h2>
+          Chat Room: <span id="currentRoom"></span>
+        </h2>
+        <ul id="messages"></ul>
+        <input type="text" id="messageInput" autocomplete="off" />
+        <button onclick="sendMessage()" id="sendMessageBtn">Send</button>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      let username = '';
+      let currentRoom = '';
+
+      function login(){
+        const usernameInput = document.getElementById('usernameInput');
+        const username = usernameInput.value.trim();
+        const namefield = document.getElementById("name");
+        if(username){
+            document.getElementById('login').style.display = 'none';
+            namefield.innerText = username;
+            document.getElementById('chat').style.display = 'block';
+            document.getElementById('messageInput').style.display = 'block';
+            document.getElementById('messageInput').focus();
+            document.getElementById('sendMessageBtn').style.display = 'block';
+            socket.emit('login',username);
+        }
+      }
+
+      function joinChatRoom(){
+        const roomNameInput = document.getElementById("roomNameInput");
+        const roomName = roomNameInput.value.trim();
+        if(roomName){
+          currentRoom = roomName;
+          document.getElementById('roomSelection').style.display = 'none';
+          document.getElementById('chatRoom').style.display = 'block';
+          document.getElementById('currentRoom').textContent = roomName;
+          document.getElementById('messageInput').focus();
+          socket.emit('joinRoom',currentRoom);
+        }
+      }
+
+      function startPrivateChat(){
+        const receipientInput = prompt('Enter the username of the person you want to chat with:');
+        if(receipientInput){
+          currentRoom = '';
+          document.getElementById('roomSelection').style.display = 'none';
+          document.getElementById('chatRoom').style.display = 'block';
+          document.getElementById('currentRoom').textContent = `Private Chat with ${receipientInput}`;
+          document.getElementById('messageInput').focus();
+          socket.emit('privateChat',receipientInput);
+        }
+      }
+
+      socket.on('loginError',(errorMessage) => {
+        alert(errorMessage);
+      })
+
+      function sendMessage() {
+        const messageInput = document.getElementById("messageInput");
+        const message = messageInput.value.trim();
+        if (message) {
+          socket.emit("chatMessage", message);
+          messageInput.value = "";
+        }
+      }
+
+      socket.on("chatMessage", (message) => {
+        console.log("from here message",message);
+        const messages = document.getElementById("messages");
+        const li = document.createElement("li");
+        li.textContent = message;
+        messages.appendChild(li);
+      });
+
+
+    </script>
+  </body>
+</html>
