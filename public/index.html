@@ -3,37 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
     <title>Real Time Chat App</title>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <h1 class="title">Welcome to the Chat Room <span id="name"></span></h1>
-    <div class="container">
-
-    <div id="login" class="section">
-      <input
-        type="text"
-        id="usernameInput"
-        autocomplete="off"
-        placeholder="Enter your Username"
-        class="input"
-      />
-      <button onclick="login()" class="button">Login</button>
-    </div>
-    <div id="chat" class="section" style="display:none;">
-      <div id="roomSelection" class="room-selection" style="display:block;">
-        <input type="text" id="roomNameInput" class="input" autocomplete="off" placeholder="Enter Chat Room Name">
-        <button onclick="joinChatRoom()" class="button">Join Chat Room</button>
-        <button onclick="startPrivateChat()" class="button">Start Private Chat</button>
-      </div>
-      <div id="chatRoom" style="display:none;">
-        <h2 class="room-header">
-          Chat Room: <span id="currentRoom"></span>
-        </h2>
-        <ul id="messages" class="messages"></ul>
-        <input type="text" id="messageInput" class="input" autocomplete="off" />
-        <button onclick="sendMessage()" id="sendMessageBtn" class="button">Send</button>
-        <p id="typingStatus" class="typing-status"></p>
+    <div class="bodyContainer">
+      
+    <div class="phone-container">
+      <div class="container">
+  
+        <div id="login" class="section">
+          <input
+          type="text"
+          id="usernameInput"
+          autocomplete="off"
+          placeholder="Enter your Username"
+          class="input"
+          />
+          <button onclick="login()" class="button">Login</button>
+        </div>
+        <div id="chat" class="section" style="display:none;">
+          <div id="roomSelection" class="room-selection" style="display:block;">
+            <input type="text" id="roomNameInput" class="input" autocomplete="off" placeholder="Enter Chat Room Name">
+            <button onclick="joinChatRoom()" class="button">Join Chat Room</button>
+            <button onclick="startPrivateChat()" class="button">Start Private Chat</button>
+          </div>
+          <div id="chatRoom" style="display:none;">
+            <h2 class="room-header">
+              Chat Room: <span id="currentRoom"></span>
+            </h2>
+            <ul id="messages" class="messages"></ul>
+            <input type="text" id="messageInput" class="input" autocomplete="off" />
+         
+            <button onclick="sendMessage()" id="sendMessageBtn" class="button">Send</button>
+           
+            <p id="typingStatus" class="typing-status"></p>
+          </div>
+        </div>
+  
       </div>
     </div>
     
