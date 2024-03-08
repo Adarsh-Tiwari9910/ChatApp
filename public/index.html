@@ -49,8 +49,7 @@
   </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      function initializeSocket(){
-        const socket = io();
+      const socket = io();
       let username = '';
       let currentRoom = '';
 
@@ -160,8 +159,6 @@
       });
 
 
-      }
-      initializeSocket();
     </script>
   </body>
 </html>
